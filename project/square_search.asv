@@ -1,0 +1,36 @@
+% use the argument principle to determine the square containing the zero
+% return the square that contains the zero
+function new_boundary = square_search(f, square_loc)
+mid_left = (square_loc(4) + square_loc(1)) / 2;
+mid_bottom = (square_loc(1) + square_loc(2)) / 2;
+mid_right = (square_loc(2) + square_loc(3)) / 2;
+mid_top = (square_loc(3) + square_loc(4)) / 2;
+mid_center = (square_loc(1) + square_loc(3)) / 2;
+func = matlabFunction(f);
+top_left = square_contour(func,  [mid_left, mid_center, mid_top, square_loc(4)]);
+top_right = square_contour(func, [mid_center, mid_right, square_loc(3), mid_top]);
+bot_left = square_contour(func,  [mid_center, mid_right, square_loc(3), mid_top]);
+bot_right = square_contour(func, [mid_x, boundary(1,2)       ; boundary(2,1), mid_y ]);
+if norm(top_left) >= 1
+    new_boundary = [boundary(1,1), mid_y ; mid_x, boundary(2,2)];
+elseif norm(top_right) >= 1
+    new_boundary = [mid_x, mid_y ; boundary(2,1), boundary(2,2)];
+elseif norm(bot_left) >= 1
+    new_boundary = [boundary(1,1), boundary(1,2); mid_x, mid_y];
+elseif norm(bot_right) >= 1
+    new_boundary = [mid_x, boundary(1,2); boundary(2,1), mid_y ];
+else
+    new_boundary = [0,0;0,0];
+end
+
+end
+
+
+
+function result = square_contour(func, boundary)
+top = gaussian_quad(func, boundary(1,1), boundary(2,1));
+right = gaussian_quad(func, boundary(2,2), boundary(1,2));
+bottom = gaussian_quad(func, boundary(2,1), boundary(1,1));
+left = gaussian_quad(func, boundary(1,2), boundary(2,2));
+result = top + bottom + left + right;
+end
